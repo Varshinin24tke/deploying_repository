@@ -31,9 +31,7 @@ const ReportPage = () => {
     try {
       const fullQuery = `${searchQuery}, India`;
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          fullQuery
-        )}`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}`
       );
       const data = await response.json();
       if (data.length > 0) {
@@ -54,6 +52,7 @@ const ReportPage = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
+          // Capture full JS float precision (15–17 digits)
           setSelectedLocation({ lat: latitude, lng: longitude });
           setSearchError("");
         },
@@ -154,8 +153,8 @@ const ReportPage = () => {
 
       {selectedLocation && (
         <p className="text-gray-700 font-medium mt-2">
-          Selected: {selectedLocation.lat.toFixed(5)},{" "}
-          {selectedLocation.lng.toFixed(5)}
+          Selected: {selectedLocation.lat.toPrecision(15)},{" "}
+          {selectedLocation.lng.toPrecision(15)}
         </p>
       )}
 
