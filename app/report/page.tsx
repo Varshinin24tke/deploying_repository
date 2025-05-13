@@ -24,13 +24,13 @@ const ReportPage = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [page, setPage] = useState<string | null>(null);
 
+  const searchParams = useSearchParams();
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    setPage(searchParams.get("page") || "1");
+  }, [searchParams]);
 
   useEffect(() => {
-    const searchParams = useSearchParams();
-    setPage(searchParams.get("page") || "1");
+    setIsClient(true);
   }, []);
 
   const handleSearch = async () => {
