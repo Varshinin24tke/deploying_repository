@@ -1,16 +1,26 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import dynamic from "next/dynamic";
-import "leaflet/dist/leaflet.css";
-import UserIdWrapper from "@/components/UserIdWrapper";
 import { useSearchParams } from "next/navigation";
+import dynamic from "next/dynamic";
 
 const MapClient = dynamic(() => import("@/components/MapClient"), {
   ssr: false,
+  loading: () => <div>Loading Map...</div>,
 });
 
-const ReportPage = () => {
+const UserIdWrapper = dynamic(() => import("@/components/UserIdWrapper"), {
+  ssr: false,
+  loading: () => <div>Loading user info...</div>,
+});
+
+const SearchParamsWrapper = ({ children }: { children: React.ReactNode }) => {
+  return <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>;
+};
+
+const ReportContent = () => {
+  const searchParams = useSearchParams();
+  const [page, setPage] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<{
     lat: number;
     lng: number;
@@ -22,16 +32,11 @@ const ReportPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-  const [page, setPage] = useState<string | null>(null);
-
-  const searchParams = useSearchParams();
-  useEffect(() => {
-    setPage(searchParams.get("page") || "1");
-  }, [searchParams]);
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    setPage(searchParams.get("page"));
+  }, [searchParams]);
 
   const handleSearch = async () => {
     if (!searchQuery) return;
@@ -117,14 +122,12 @@ const ReportPage = () => {
   return (
     <div className="min-h-screen bg-white text-gray-900 p-4 md:p-6 max-w-xl mx-auto">
       <h1 className="text-2xl md:text-3xl font-bold mb-4 text-emerald-700">
-        Report a Location
+        Report a Location - {page}
       </h1>
 
-      <p className="text-sm text-gray-600 mb-2">
-        Reporting from page: {page}
-      </p>
+      <p className="text-sm text-gray-600 mb-2">Reporting from page: {page}</p>
 
-      <Suspense fallback={null}>
+      <Suspense fallback={<div>Loading user info...</div>}>
         <UserIdWrapper onUserId={setUserId} />
       </Suspense>
 
@@ -155,12 +158,10 @@ const ReportPage = () => {
         Use My Location
       </button>
 
-      <Suspense fallback={<div>Loading Map...</div>}>
-        <MapClient
-          onLocationSelect={setSelectedLocation}
-          currentLocation={selectedLocation}
-        />
-      </Suspense>
+      <MapClient
+        onLocationSelect={setSelectedLocation}
+        currentLocation={selectedLocation}
+      />
 
       {selectedLocation && (
         <p className="text-gray-700 font-medium mt-2">
@@ -199,6 +200,14 @@ const ReportPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const ReportPage = () => {
+  return (
+    <SearchParamsWrapper>
+      <ReportContent />
+    </SearchParamsWrapper>
   );
 };
 
