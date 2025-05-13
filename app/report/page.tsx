@@ -11,9 +11,6 @@ const MapClient = dynamic(() => import("@/components/MapClient"), {
 });
 
 const ReportPage = () => {
-  const searchParams = useSearchParams();
-  const page = searchParams.get("page") || "1";
-
   const [selectedLocation, setSelectedLocation] = useState<{
     lat: number;
     lng: number;
@@ -25,9 +22,15 @@ const ReportPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [page, setPage] = useState<string | null>(null);
 
   useEffect(() => {
     setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    const searchParams = useSearchParams();
+    setPage(searchParams.get("page") || "1");
   }, []);
 
   const handleSearch = async () => {
