@@ -10,7 +10,7 @@ export default function HomePage() {
         A platform for reporting and visualizing unsafe locations to ensure a
         safer environment.
       </p>
-      <Link href="/report">
+      <Link href={{ pathname: "/report", query: { page: "1" } }}>
         <button className="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 px-6 rounded">
           Report a Location
         </button>

@@ -4,12 +4,16 @@ import React, { useState, useEffect, Suspense } from "react";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 import UserIdWrapper from "@/components/UserIdWrapper";
+import { useSearchParams } from "next/navigation";
 
 const MapClient = dynamic(() => import("@/components/MapClient"), {
   ssr: false,
 });
 
 const ReportPage = () => {
+  const searchParams = useSearchParams();
+  const page = searchParams.get("page") || "1";
+
   const [selectedLocation, setSelectedLocation] = useState<{
     lat: number;
     lng: number;
@@ -52,7 +56,6 @@ const ReportPage = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          // Capture full JS float precision (15–17 digits)
           setSelectedLocation({ lat: latitude, lng: longitude });
           setSearchError("");
         },
@@ -78,6 +81,7 @@ const ReportPage = () => {
       description,
       latt: selectedLocation.lat,
       long: selectedLocation.lng,
+      pageSource: page,
     };
 
     try {
@@ -112,6 +116,10 @@ const ReportPage = () => {
       <h1 className="text-2xl md:text-3xl font-bold mb-4 text-emerald-700">
         Report a Location
       </h1>
+
+      <p className="text-sm text-gray-600 mb-2">
+        Reporting from page: {page}
+      </p>
 
       <Suspense fallback={null}>
         <UserIdWrapper onUserId={setUserId} />
