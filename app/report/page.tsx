@@ -36,6 +36,16 @@ const ReportContent = () => {
   useEffect(() => {
     setIsClient(true);
     setPage(searchParams.get("page"));
+
+    const latParam = searchParams.get("lat");
+    const lngParam = searchParams.get("lng");
+    if (latParam && lngParam) {
+      const lat = parseFloat(latParam);
+      const lng = parseFloat(lngParam);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        setSelectedLocation({ lat, lng });
+      }
+    }
   }, [searchParams]);
 
   const handleSearch = async () => {
@@ -60,20 +70,8 @@ const ReportContent = () => {
   };
 
   const handleUseMyLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setSelectedLocation({ lat: latitude, lng: longitude });
-          setSearchError("");
-        },
-        (err) => {
-          console.error(err);
-          setSearchError("Failed to access your location.");
-        }
-      );
-    } else {
-      setSearchError("Geolocation is not supported in this browser.");
+    if (!selectedLocation) {
+      setSearchError("No lat/lng found in URL. Cannot use location.");
     }
   };
 
